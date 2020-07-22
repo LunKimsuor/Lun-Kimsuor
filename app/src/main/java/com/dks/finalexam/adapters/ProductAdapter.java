@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.dks.finalexam.R;
 import com.dks.finalexam.models.Product;
 import com.dks.finalexam.viewholders.ProductViewHolder;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -35,7 +36,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = products.get(position);
-        holder.getProduct_image().setImageURI(Uri.parse(product.getProduct_image()));
+        Picasso.get().load(
+                product.getProduct_image()).into(holder.getProduct_image());
         holder.getProduct_title().setText(product.getProduct_name());
         holder.getProduct_price().setText("$" + product.getProduct_price());
         holder.getProduct_rate().setText(product.getProduct_averageRate() + "");

@@ -11,6 +11,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.dks.finalexam.R;
 import com.dks.finalexam.adapters.ProductAdapter;
 import com.dks.finalexam.models.Product;
@@ -36,38 +42,29 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.home_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        ProductAdapter productAdapter = new ProductAdapter();
-
         // load data from server here
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://www.google.com";
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        String url = "http://ite-rupp.ap-southeast-1.elasticbeanstalk.com/products.php";
 
-// Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        textView.setText("Response is: "+ response.substring(0,500));
+                        ProductAdapter productAdapter = new ProductAdapter();
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<Product>>(){}.getType();
+                        List<Product> productList = gson.fromJson(response, listType);
+
+                        productAdapter.setProducts(productList);
+                        recyclerView.setAdapter(productAdapter);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                textView.setText("That didn't work!");
             }
         });
 
-// Add the request to the RequestQueue.
         queue.add(stringRequest);
-
-        Gson gson = new Gson();
-        String url = "http://ite-rupp.ap-southeast-1.elasticbeanstalk.com/products.php";
-        Type listType = new TypeToken<ArrayList<Product>>(){}.getType();
-        List<Product> productList = gson.fromJson(url, listType);
-        productAdapter.setProducts(productList);
-
-        recyclerView.setAdapter(productAdapter);
 
     }
 }
